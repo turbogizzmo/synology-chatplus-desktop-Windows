@@ -682,8 +682,10 @@ export function serviceEditor(
     url.spellcheck = false;
     const urlField = field("url", t("settings.serverUrl"), url);
     const quickConnectHelp = document.createElement("small");
+    quickConnectHelp.id = "service-dialog-url-help";
     quickConnectHelp.textContent = t("services.quickconnectHelp");
     urlField.append(quickConnectHelp);
+    url.setAttribute("aria-describedby", quickConnectHelp.id);
     url.addEventListener("input", () => {
       draft.url = url.value;
       url.setCustomValidity("");
