@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChatPlus Desktop for Windows</title>
+<meta name="description" content="Unofficial Windows desktop app for Synology ChatPlus and Synology Chat. Sign in with just your QuickConnect ID.">
+<link rel="icon" href="icon.png">
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --text: #16181d; --muted: #5b6270;
+    --line: #e3e6ea; --accent: #1c73e5; --accent-text: #ffffff; --code: #eef1f5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1115; --card: #171a21; --text: #e9ecf1; --muted: #9aa3b2;
+      --line: #262b35; --accent: #3b8cf5; --accent-text: #ffffff; --code: #1f2430;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.55 "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  main { max-width: 680px; margin: 0 auto; padding: 48px 20px 64px; }
+  header { text-align: center; }
+  header img { width: 96px; height: 96px; border-radius: 22px; }
+  h1 { font-size: 32px; line-height: 1.2; margin: 16px 0 8px; letter-spacing: -0.01em; }
+  .lead { color: var(--muted); font-size: 18px; margin: 0 auto 28px; max-width: 520px; }
+  .download {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: var(--accent-text); text-decoration: none;
+    font-weight: 600; font-size: 18px; padding: 14px 28px; border-radius: 12px;
+  }
+  .download:hover { filter: brightness(1.08); }
+  .download:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+  .download.pending { background: var(--code); color: var(--text); }
+  .meta { color: var(--muted); font-size: 14px; margin-top: 12px; }
+  section {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 22px 24px; margin-top: 24px;
+  }
+  h2 { font-size: 19px; margin: 0 0 12px; }
+  ol, ul { margin: 0; padding-left: 22px; }
+  li { margin: 6px 0; }
+  li::marker { color: var(--muted); }
+  code {
+    background: var(--code); border-radius: 6px; padding: 2px 6px;
+    font: 14px ui-monospace, Consolas, SFMono-Regular, Menlo, monospace;
+  }
+  .note { color: var(--muted); font-size: 14px; margin: 10px 0 0; }
+  a { color: var(--accent); }
+  footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 36px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.png" alt="">
+    <h1>ChatPlus Desktop for Windows</h1>
+    <p class="lead">A Windows app for Synology ChatPlus and Synology Chat. Sign in with just your QuickConnect ID; no server addresses to figure out.</p>
+    <a id="download" class="download pending" href="https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
+      <span id="download-label">Checking for the latest version…</span>
+    </a>
+    <p class="meta"><span id="download-meta">Windows 10 and 11 · 64-bit</span> · <a href="https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases">All versions</a></p>
+  </header>
+
+  <section>
+    <h2>Install</h2>
+    <ol>
+      <li>Run the downloaded <code>ChatPlus-Desktop_…_x64-setup.exe</code>.</li>
+      <li>Because this beta isn’t signed by a certificate authority, Windows SmartScreen may say it protected your PC. Click <strong>More info</strong>, then <strong>Run anyway</strong>. You only need to do this once.</li>
+      <li>Follow the installer. If Microsoft WebView2 is missing, setup downloads it for you.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Set up</h2>
+    <ol>
+      <li>Choose <strong>Set up Synology ChatPlus</strong>. Using the standard Synology Chat package? Pick the link below it instead.</li>
+      <li>Enter your <strong>QuickConnect ID</strong>, for example <code>mynas</code>. You can also enter your NAS address, such as <code>https://nas.example.com:5001</code>. No DSM alias is needed.</li>
+      <li>Sign in with your DSM account.</li>
+    </ol>
+    <p class="note">On a laptop, the app finds your NAS again by itself when you move between home and the office. Press <strong>Ctrl+R</strong> to check right away.</p>
+  </section>
+
+  <section>
+    <h2>Good to know</h2>
+    <ul>
+      <li>This is a beta for testing. If something breaks, please <a href="https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/issues/new/choose">report an issue</a>.</li>
+      <li>Want Discord, Slack, WhatsApp, Messenger or Mattermost too? Turn on <strong>Settings › Services › Show other chat services</strong>.</li>
+      <li>The app lives in the system tray, shows unread counts on the taskbar and sends normal Windows notifications.</li>
+      <li>No ads and no tracking. Your messages and password never pass through this app’s developers.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Unofficial app, not affiliated with or endorsed by Synology.<br>
+    Open source under GPL-3.0 · <a href="https://github.com/turbogizzmo/synology-chatplus-desktop-Windows">Source code</a> · Based on ChatPlus Desktop by Swiph3l · <a href="https://turbogizzmo.github.io/synology-chatplus-desktop-OSX/">Mac version</a>
+  </footer>
+</main>
+<script>
+  // Release asset names carry the version, so a fixed releases/latest/download
+  // link can't work. Ask GitHub for the newest published release with a setup .exe;
+  // without one (or without network), keep the link to the Releases page.
+  (async () => {
+    const button = document.getElementById("download");
+    const label = document.getElementById("download-label");
+    const meta = document.getElementById("download-meta");
+    const fallback = () => {
+      label.textContent = "No release yet. See all versions";
+    };
+    try {
+      const response = await fetch(
+        "https://api.github.com/repos/turbogizzmo/synology-chatplus-desktop-Windows/releases?per_page=20",
+        { headers: { Accept: "application/vnd.github+json" } },
+      );
+      if (!response.ok) throw new Error(String(response.status));
+      const releases = await response.json();
+      for (const release of releases) {
+        if (release.draft) continue;
+        const asset = (release.assets || []).find((a) => /_x64-setup\.exe$/.test(a.name));
+        if (!asset) continue;
+        button.href = asset.browser_download_url;
+        button.classList.remove("pending");
+        label.textContent = "Download for Windows";
+        meta.textContent = `${release.prerelease ? "Beta" : "Version"} ${release.tag_name.replace(/^v/, "")} · Windows 10 and 11 · 64-bit`;
+        return;
+      }
+      fallback();
+    } catch {
+      label.textContent = "Download from GitHub Releases";
+    }
+  })();
+</script>
+</body>
+</html>
