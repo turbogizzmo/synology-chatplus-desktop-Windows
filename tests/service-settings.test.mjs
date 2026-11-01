@@ -251,6 +251,25 @@ test("provider choices control URL visibility and supported notifications withou
   }
 });
 
+test("the settings migration treats exactly the optional providers as opt-in", async () => {
+  const context = {};
+  runInNewContext(providerResult.outputFiles[0].text, context);
+  const optional = Object.entries(context.providerUi.providers)
+    .filter(([, definition]) => definition.optional)
+    .map(([id]) => id)
+    .sort();
+  const state = await readFile("src-tauri/src/state.rs", "utf8");
+  const migration = state.slice(
+    state.indexOf("fn migrate_optional_services_preference"),
+  );
+  const list = /Some\(((?:"[a-z-]+"\s*\|?\s*)+)\)/.exec(migration);
+  assert.ok(list, "migration provider list not found");
+  const migrated = [...list[1].matchAll(/"([a-z-]+)"/g)]
+    .map((match) => match[1])
+    .sort();
+  assert.deepEqual(migrated, optional);
+});
+
 test("Add offers only Synology providers until other services are opted in", () => {
   const choices = (f) =>
     [...f.document.querySelectorAll('input[name="service-provider"]')].map(

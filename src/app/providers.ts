@@ -32,6 +32,7 @@ export interface ProviderDefinition {
   icon: string;
   experimental: boolean;
   // Non-Synology services stay out of the Add list until Settings opts in.
+  // Keep in sync with migrate_optional_services_preference in src-tauri/src/state.rs.
   optional: boolean;
   notifications: boolean;
   urlMode: "server" | "workspace" | "fixed";

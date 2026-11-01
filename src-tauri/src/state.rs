@@ -257,6 +257,8 @@ fn migrate_optional_services_preference(value: &mut serde_json::Value) -> bool {
     if settings.contains_key("showOptionalServices") {
         return false;
     }
+    // Must match the providers marked `optional: true` in src/app/providers.ts;
+    // tests/service-settings.test.mjs fails if the two lists drift apart.
     // Profiles that already use an optional service keep seeing them in
     // the Add list; everyone else starts with the Synology services only.
     let uses_optional = settings
