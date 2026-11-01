@@ -61,7 +61,7 @@
     <p class="lead">A Windows app for Synology ChatPlus and Synology Chat. Sign in with just your QuickConnect ID; no server addresses to figure out.</p>
     <a id="download" class="download pending" href="https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
-      <span id="download-label">Checking for the latest version…</span>
+      <span id="download-label">Download from GitHub Releases</span>
     </a>
     <p class="meta"><span id="download-meta">Windows 10 and 11 · 64-bit</span> · <a href="https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases">All versions</a></p>
   </header>
@@ -111,10 +111,13 @@
     const fallback = () => {
       label.textContent = "No release yet. See all versions";
     };
+    // The default label already works without the script; don't wait forever.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
     try {
       const response = await fetch(
         "https://api.github.com/repos/turbogizzmo/synology-chatplus-desktop-Windows/releases?per_page=20",
-        { headers: { Accept: "application/vnd.github+json" } },
+        { headers: { Accept: "application/vnd.github+json" }, signal: controller.signal },
       );
       if (!response.ok) throw new Error(String(response.status));
       const releases = await response.json();
@@ -131,6 +134,8 @@
       fallback();
     } catch {
       label.textContent = "Download from GitHub Releases";
+    } finally {
+      clearTimeout(timer);
     }
   })();
 </script>
