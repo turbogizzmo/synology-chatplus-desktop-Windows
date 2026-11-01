@@ -291,7 +291,7 @@ impl Failure {
             Self::Lookup(errno) => format!("QuickConnect lookup for \"{id}\" failed (error {errno})."),
             Self::Network => "Could not reach Synology QuickConnect. Check your internet connection.".into(),
             Self::Unreachable => format!(
-                "QuickConnect found \"{id}\", but none of its addresses answered securely from this Mac. Make sure the NAS is online and HTTPS is enabled in DSM."
+                "QuickConnect found \"{id}\", but none of its addresses answered securely from this PC. Make sure the NAS is online and HTTPS is enabled in DSM."
             ),
         }
     }
