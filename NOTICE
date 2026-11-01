@@ -1,8 +1,13 @@
-ChatPlus Desktop
-Copyright (c) 2026 Swiph3l
+ChatPlus Desktop for Windows
+Copyright (c) 2026 Swiph3l (original ChatPlus Desktop)
+Copyright (c) 2026 turbogizzmo (modifications)
 
 Licensed under the GNU General Public License v3.0 only (GPL-3.0-only).
 Original project: https://github.com/Swiph3l/synology-chatplus-desktop
+
+This is a modified version of ChatPlus Desktop by Swiph3l. It was changed in
+2026 to lead with Synology ChatPlus, hide the other chat services behind an
+opt-in setting, and sign in with a plain NAS address or QuickConnect ID.
 
 ChatPlus Desktop is an independent, unofficial community desktop client for
 Synology ChatPlus. It is not affiliated with, endorsed by, sponsored by,
