@@ -288,7 +288,8 @@ async fn selected_windows_update_accepts_raw_nsis_and_rejects_archive_manifests(
         .await
         .unwrap()
         .unwrap();
-    let base = "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/download/v0.2.0";
+    let base =
+        "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/download/v0.2.0";
     for extension in ["", ".zip", ".tar.gz"] {
         let name = format!("windows-x86_64--ChatPlus-Desktop_0.2.0_x64-setup.exe{extension}");
         let url: url::Url = format!("{base}/{name}").parse().unwrap();
