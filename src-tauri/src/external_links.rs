@@ -295,7 +295,7 @@ fn current_source_bridge(app: &AppHandle, label: &str, bridge: u64) -> bool {
 
 #[cfg(windows)]
 pub fn initialization_script(service: &ServiceConfig) -> String {
-    let origin = url::Url::parse(&service.url)
+    let origin = url::Url::parse(&crate::quickconnect::effective(service))
         .map(|url| url.origin().ascii_serialization())
         .unwrap_or_default();
     format!(

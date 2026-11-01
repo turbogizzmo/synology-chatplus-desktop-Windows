@@ -1195,11 +1195,19 @@ fn create_registered(
     let load_app = app.clone();
     let load_id = service.id.clone();
     let load_ticket = ticket.clone();
-    let url = service
-        .provider
-        .validate_url(&service.url)?
-        .parse()
-        .map_err(|_| "Invalid service URL.")?;
+    // An unverified QuickConnect service loads nothing until it resolves; following
+    // the directory link would redirect to a host the trust checks do not know.
+    let url = if crate::quickconnect::pending(service) {
+        crate::quickconnect::refresh(app, service, false);
+        "about:blank".parse().map_err(|_| "Invalid service URL.")?
+    } else {
+        service
+            .provider
+            .validate_url(&crate::quickconnect::effective(service))?
+            .parse()
+            .map(|url| service.provider.dsm_launch(url))
+            .map_err(|_| "Invalid service URL.")?
+    };
     let mut builder = WebviewBuilder::new(&session.webview_label, WebviewUrl::External(url))
         .focused(false)
         .initialization_script(crate::external_links::initialization_script(service))

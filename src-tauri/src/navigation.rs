@@ -64,7 +64,10 @@ pub fn same_server(target: &Url, configured: &url::Origin) -> bool {
 /// recognizes a download. CDN previews belong in a related attachment popup,
 /// never in the main service document or the operating-system URL opener.
 pub fn provider_document(service: &crate::providers::ServiceConfig, target: &Url) -> bool {
-    if service.provider.allows(&service.url, target) {
+    if service
+        .provider
+        .allows(&crate::quickconnect::effective(service), target)
+    {
         return true;
     }
     target.scheme() == "blob" && crate::downloads::attachment_popup(service, target)

@@ -195,10 +195,12 @@ pub fn attachment_popup(service: &ServiceConfig, target: &url::Url) -> bool {
         return url::Url::parse(target.path()).is_ok_and(|inner| {
             inner.username().is_empty()
                 && inner.password().is_none()
-                && url::Url::parse(&service.url).is_ok_and(|configured| {
-                    target.origin() == configured.origin()
-                        && !matches!(target.origin(), url::Origin::Opaque(_))
-                })
+                && url::Url::parse(&crate::quickconnect::effective(service)).is_ok_and(
+                    |configured| {
+                        target.origin() == configured.origin()
+                            && !matches!(target.origin(), url::Origin::Opaque(_))
+                    },
+                )
         });
     }
     service.provider == ProviderId::Discord
@@ -221,7 +223,9 @@ pub fn attachment_popup(service: &ServiceConfig, target: &url::Url) -> bool {
 
 pub fn popup_allowed(service: &ServiceConfig, target: &url::Url) -> bool {
     target.as_str() == "about:blank"
-        || service.provider.allows(&service.url, target)
+        || service
+            .provider
+            .allows(&crate::quickconnect::effective(service), target)
         || attachment_popup(service, target)
 }
 

@@ -124,6 +124,7 @@
   "services.allowNotifications": "Desktop-Benachrichtigungen für diesen Dienst erlauben",
   "services.experimentalProvider": "Experimenteller Anbieter",
   "services.experimentalHelp": "Websitzungen werden unterstützt. Desktop-Benachrichtigungen und Ungelesen-Anzeigen sind noch nicht verfügbar.",
+  "services.quickconnectHelp": "Gib die Adresse deines NAS ein (z. B. https://nas.example.com:5001) oder nur deine Synology-QuickConnect-ID (z. B. mynas). Ein DSM-Alias ist nicht nötig. Drücke nach einem Netzwerkwechsel Ctrl+R.",
   "services.notificationHelp": "Desktop-Benachrichtigungen richten sich nach dieser Diensteinstellung und den Benachrichtigungseinstellungen des Anbieters.",
   "services.ssoHelp": "Externes SSO öffnet sich möglicherweise im Standardbrowser.",
   "services.remove": "Dienst entfernen",
