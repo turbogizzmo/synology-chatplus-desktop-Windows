@@ -128,6 +128,7 @@
   "services.showOptionalHelp": "Fügt Slack, Discord, WhatsApp, Messenger und Mattermost zur Dienstliste hinzu. Diese sind experimentell. Synology ChatPlus und Synology Chat sind immer verfügbar.",
   "services.notificationHelp": "Desktop-Benachrichtigungen richten sich nach dieser Diensteinstellung und den Benachrichtigungseinstellungen des Anbieters.",
   "services.ssoHelp": "Externes SSO öffnet sich möglicherweise im Standardbrowser.",
+  "services.quickconnectHelp": "Gib die Adresse deines NAS ein (z. B. https://nas.example.com:5001) oder nur deine Synology-QuickConnect-ID (z. B. mynas). Ein DSM-Alias ist nicht nötig. Drücke nach einem Netzwerkwechsel Ctrl+R.",
   "services.remove": "Dienst entfernen",
   "services.removalHelp": "Entfernt den Dienst nach Bestätigung aus der Desktop-Konfiguration. Das gespeicherte Profil bleibt erhalten.",
   "services.removeLabel": "{name} entfernen",

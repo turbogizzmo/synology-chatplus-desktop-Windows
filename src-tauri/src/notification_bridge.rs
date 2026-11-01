@@ -112,9 +112,12 @@ fn permission_scope_valid(
     source: &str,
 ) -> bool {
     permission_grant_scope_valid(settings, service, Some((bridge_id, true)), current)
-        && trusted_origin(&service.url, source)
-        && url::Url::parse(source)
-            .is_ok_and(|source| service.provider.allows(&service.url, &source))
+        && trusted_origin(&crate::quickconnect::effective(service), source)
+        && url::Url::parse(source).is_ok_and(|source| {
+            service
+                .provider
+                .allows(&crate::quickconnect::effective(service), &source)
+        })
 }
 
 fn permission_grant_scope_valid(
@@ -207,7 +210,7 @@ async fn grant_permission_captured(
             .filter(|(_, available)| *available)
             .map(|(id, _)| id)
             .ok_or("Provider notification bridge unavailable. Reload the service and retry.")?;
-        let origin = url::Url::parse(&service.url)
+        let origin = url::Url::parse(&crate::quickconnect::effective(&service))
             .map_err(|_| "Configure a valid service URL first.")?
             .origin()
             .ascii_serialization();
@@ -936,7 +939,7 @@ fn finish_attention_query(app: &tauri::AppHandle, token: u64, succeeded: bool, v
         return;
     }
     let source = CoTaskMemPWSTR::from(source).to_string();
-    if !trusted_origin(&pending.service.url, &source) {
+    if !trusted_origin(&crate::quickconnect::effective(&pending.service), &source) {
         return;
     }
     let result = crate::unread::publish_attention_for(
@@ -1331,7 +1334,7 @@ pub fn attach(
                 let source = CoTaskMemPWSTR::from(source).to_string();
                 if !crate::services::configured(&unread_app, &unread_service)
                     || !current_bridge(&unread_app, &unread_service.id, bridge_id)
-                    || !trusted_origin(&unread_service.url, &source)
+                    || !trusted_origin(&crate::quickconnect::effective(&unread_service), &source)
                 {
                     return Ok(());
                 }
@@ -1412,7 +1415,7 @@ pub fn attach(
                     if !crate::services::configured(&notify_app, &notify_service)
                         || !current_bridge(&notify_app, &notify_service.id, bridge_id)
                         || !notify_service.supports_notifications()
-                        || !trusted_origin(&notify_service.url, &origin)
+                        || !trusted_origin(&crate::quickconnect::effective(&notify_service), &origin)
                     {
                         bridge_status(&notify_app, &notify_service.id, crate::diagnostics::NotificationReason::SourceRejected);
                         return Ok(());
@@ -1575,7 +1578,7 @@ pub fn attach(
                     (false, Reason::SourceRejected)
                 } else if !settings.services.iter().any(|s| s.id == permission_service.id && s.notifications) {
                     (false, Reason::ServiceMuted)
-                } else if !permission_service.supports_notifications() || !trusted_origin(&permission_service.url, &uri) {
+                } else if !permission_service.supports_notifications() || !trusted_origin(&crate::quickconnect::effective(&permission_service), &uri) {
                     (false, Reason::SourceRejected)
                 } else if !notifications::permission(&permission_app).granted {
                     (false, Reason::PermissionDenied)

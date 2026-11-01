@@ -128,6 +128,7 @@
   "services.showOptionalHelp": "將 Slack、Discord、WhatsApp、Messenger 與 Mattermost 加入服務清單。這些服務仍為實驗性功能。Synology ChatPlus 與 Synology Chat 一律可用。",
   "services.notificationHelp": "桌面通知會依照此服務的設定及供應商本身的通知偏好設定。",
   "services.ssoHelp": "外部 SSO 可能會在預設瀏覽器中開啟。",
+  "services.quickconnectHelp": "輸入 NAS 位址（例如 https://nas.example.com:5001），或只輸入 Synology QuickConnect ID（例如 mynas）。不需要設定 DSM 別名。切換網路後請按 Ctrl+R。",
   "services.remove": "移除服務",
   "services.removalHelp": "確認後，會從桌面設定中移除此服務。已儲存的設定檔會保留。",
   "services.removeLabel": "移除 {name}",

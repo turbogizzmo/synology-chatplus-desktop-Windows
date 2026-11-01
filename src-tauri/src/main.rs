@@ -16,6 +16,7 @@ mod platform;
 mod project;
 mod provider_read;
 mod providers;
+mod quickconnect;
 mod services;
 mod shell;
 mod single_instance;
@@ -153,6 +154,7 @@ fn main() {
                 desktop_notifications::capture_notification_status(app.handle());
             }
             desktop_notifications::icons(app.handle());
+            quickconnect::load(app.handle());
             menu::create(app.handle())?;
             tray::create(app.handle())?;
             // Configured Windows startup always owns Main, even when Settings is requested.
@@ -165,6 +167,8 @@ fn main() {
             if settings_requested {
                 shell::settings(app.handle())?;
             }
+            quickconnect::refresh_all(app.handle());
+            quickconnect::watch(app.handle());
             updates::start(app.handle());
             single_instance::ready(app.handle());
             Ok(())

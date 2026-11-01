@@ -128,6 +128,7 @@
   "services.showOptionalHelp": "Slack、Discord、WhatsApp、Messenger、Mattermost をサービス一覧に追加します。これらは試験的な機能です。Synology ChatPlus と Synology Chat は常に利用できます。",
   "services.notificationHelp": "デスクトップ通知は、このサービスの設定と提供元の通知設定に従います。",
   "services.ssoHelp": "外部 SSO は既定のブラウザーで開く場合があります。",
+  "services.quickconnectHelp": "NAS のアドレス（例: https://nas.example.com:5001）または Synology QuickConnect ID（例: mynas）だけを入力してください。DSM のエイリアスは不要です。ネットワーク変更後は Ctrl+R を押してください。",
   "services.remove": "サービスを削除",
   "services.removalHelp": "確認後、デスクトップの設定からこのサービスを削除します。保存済みプロファイルは保持されます。",
   "services.removeLabel": "{name} を削除",
