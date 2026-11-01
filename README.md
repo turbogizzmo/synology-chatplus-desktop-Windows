@@ -66,7 +66,10 @@ with no Synology, Meta, Slack or Discord affiliation.
 
 Based on upstream `0.9.1`. **This fork has no published releases yet.** Until it
 does, [build from source](#build-from-source). Releases will appear on this
-repository's [Releases page](https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases).
+repository's [Releases page](https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases),
+and the [download page](https://turbogizzmo.github.io/synology-chatplus-desktop-Windows/)
+will link the newest installer. Every pull request also builds a test installer you
+can download from its CI run (GitHub sign-in required).
 
 > [!IMPORTANT]
 > The in-app updater still points at the upstream project's releases and signing
