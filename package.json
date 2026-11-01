@@ -1,6 +1,6 @@
 {
   "name": "synology-chatplus-desktop",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "private": true,
   "type": "module",
   "license": "GPL-3.0-only",
@@ -30,12 +30,12 @@
     "vite": "8.3.4"
   },
   "description": "Unofficial community desktop client for Synology ChatPlus.",
-  "author": "Swiph3l",
+  "author": "turbogizzmo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Swiph3l/synology-chatplus-desktop.git"
+    "url": "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows.git"
   },
-  "homepage": "https://github.com/Swiph3l/synology-chatplus-desktop",
+  "homepage": "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows",
   "engines": {
     "node": "^22.12.0 || ^24.0.0"
   }

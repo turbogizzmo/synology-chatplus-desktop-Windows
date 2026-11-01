@@ -2,6 +2,30 @@
 
 All notable changes will be documented here. Versions follow Semantic Versioning.
 
+## 0.10.0
+
+First release of ChatPlus Desktop for Windows from turbogizzmo's fork. It is based on
+upstream 0.9.1 and installs alongside the upstream app with its own settings.
+
+### Added
+
+- Sign in with a plain NAS address (for example `https://nas.example.com:5001`) or
+  just a Synology QuickConnect ID (for example `mynas`); no DSM Login Portal alias is
+  needed. QuickConnect connects only to an address that proves it is your NAS, and
+  follows you between networks (checked every minute, or right away with Ctrl+R).
+- Settings > Services > **Show other chat services** opt-in for Slack, Discord,
+  WhatsApp, Messenger and Mattermost.
+
+### Changed
+
+- First launch leads with **Set up Synology ChatPlus**; classic Synology Chat is a
+  secondary link. Other chat services are hidden until opted in; profiles that
+  already use one keep seeing them.
+- The service bar is hidden while only one service is enabled.
+- Updates, About and bug reports now come from this fork's repository, signed with
+  its own update key. The app identifier is now
+  `io.github.turbogizzmo.chatplus-desktop-windows`, so settings start fresh.
+
 ## 0.9.1 - prerelease candidate
 
 ### Fixed

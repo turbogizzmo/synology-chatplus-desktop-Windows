@@ -171,7 +171,7 @@ fn production_public_key_parses_and_manual_updater_initializes() {
     let app = app();
     super::builder(
         app.handle(),
-        "https://github.com/Swiph3l/synology-chatplus-desktop/releases/latest/download/latest.json"
+        "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/latest/download/latest.json"
             .parse()
             .unwrap(),
         config.updater_public_key,
@@ -288,7 +288,8 @@ async fn selected_windows_update_accepts_raw_nsis_and_rejects_archive_manifests(
         .await
         .unwrap()
         .unwrap();
-    let base = "https://github.com/Swiph3l/synology-chatplus-desktop/releases/download/v0.2.0";
+    let base =
+        "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/download/v0.2.0";
     for extension in ["", ".zip", ".tar.gz"] {
         let name = format!("windows-x86_64--ChatPlus-Desktop_0.2.0_x64-setup.exe{extension}");
         let url: url::Url = format!("{base}/{name}").parse().unwrap();

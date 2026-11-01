@@ -1,13 +1,13 @@
 [package]
 name = "chatplus-desktop"
-version = "0.9.1"
+version = "0.10.0"
 description = "Unofficial community desktop client for Synology ChatPlus."
-authors = ["Swiph3l"]
+authors = ["Swiph3l", "turbogizzmo"]
 license = "GPL-3.0-only"
 edition = "2021"
 publish = false
-repository = "https://github.com/Swiph3l/synology-chatplus-desktop"
-homepage = "https://github.com/Swiph3l/synology-chatplus-desktop"
+repository = "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows"
+homepage = "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows"
 
 [features]
 # Swiph3l: Explicit local QA builds may persist allowlisted notification transitions.

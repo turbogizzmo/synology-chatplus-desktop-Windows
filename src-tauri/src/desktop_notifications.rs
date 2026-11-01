@@ -802,15 +802,15 @@ mod tests {
     #[cfg(windows)]
     #[test]
     fn development_toast_sender_uses_registered_fallback_and_release_keeps_its_identifier() {
-        let identifier = "io.github.swiph3l.chatplus-desktop.services-validation";
+        let identifier = "io.github.turbogizzmo.chatplus-desktop-windows.services-validation";
         assert_eq!(
             sender_id(identifier, true),
             tauri_winrt_notification::Toast::POWERSHELL_APP_ID
         );
         assert_eq!(sender_id(identifier, false), identifier);
         assert_eq!(
-            sender_id("io.github.swiph3l.chatplus-desktop", false),
-            "io.github.swiph3l.chatplus-desktop"
+            sender_id("io.github.turbogizzmo.chatplus-desktop-windows", false),
+            "io.github.turbogizzmo.chatplus-desktop-windows"
         );
     }
     #[test]

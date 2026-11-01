@@ -47,7 +47,7 @@ Useful verification commands, with the final artifact substituted:
 ```powershell
 Get-FileHash -LiteralPath '<artifact>' -Algorithm SHA256
 Get-AuthenticodeSignature -LiteralPath '<artifact>'
-gh attestation verify '<artifact>' -R Swiph3l/synology-chatplus-desktop
+gh attestation verify '<artifact>' -R turbogizzmo/synology-chatplus-desktop-Windows
 ```
 
 Changing or signing a file invalidates its earlier hashes and scan results.

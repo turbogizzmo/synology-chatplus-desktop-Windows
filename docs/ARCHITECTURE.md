@@ -33,7 +33,7 @@ and capturing the originating view; perform deferred projection after unlocking.
 Application storage isolation does not isolate a shared Windows autostart entry.
 Both the autostart plugin and Windows command/status reconciliation must use
 `state::autostart_entry_name`. The canonical identifier
-`io.github.swiph3l.chatplus-desktop` retains the entry name `ChatPlus Desktop` so
+`io.github.turbogizzmo.chatplus-desktop-windows` retains the entry name `ChatPlus Desktop` so
 existing preferences survive. Other identifiers use
 `ChatPlus Desktop (<identifier>)`. This separates their Run and StartupApproved
 entries and prevents an alternate build from adopting or repairing production's

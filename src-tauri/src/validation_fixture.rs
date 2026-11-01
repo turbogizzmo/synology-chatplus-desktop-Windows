@@ -7,7 +7,7 @@ use crate::providers::ProviderId;
 use crate::providers::ServiceConfig;
 
 #[cfg(any(all(windows, debug_assertions), test))]
-const IDENTIFIER: &str = "io.github.swiph3l.chatplus-desktop.services-validation";
+const IDENTIFIER: &str = "io.github.turbogizzmo.chatplus-desktop-windows.services-validation";
 #[cfg(all(windows, debug_assertions))]
 static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
 
@@ -63,8 +63,8 @@ mod tests {
         assert!(profile_enabled(true, IDENTIFIER));
         assert!(!profile_enabled(false, IDENTIFIER));
         for identifier in [
-            "io.github.swiph3l.chatplus-desktop",
-            "io.github.swiph3l.chatplus-desktop.services-validation-extra",
+            "io.github.turbogizzmo.chatplus-desktop-windows",
+            "io.github.turbogizzmo.chatplus-desktop-windows.services-validation-extra",
             "",
         ] {
             assert!(!profile_enabled(true, identifier));

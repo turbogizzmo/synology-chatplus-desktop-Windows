@@ -64,20 +64,18 @@ with no Synology, Meta, Slack or Discord affiliation.
 
 ## Status and downloads
 
-Based on upstream `0.9.1`. **This fork has no published releases yet.** Until it
-does, [build from source](#build-from-source). Releases will appear on this
-repository's [Releases page](https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases),
-and the [download page](https://turbogizzmo.github.io/synology-chatplus-desktop-Windows/)
-will link the newest installer. Every pull request also builds a test installer you
-can download from its CI run (GitHub sign-in required).
+**[Download ChatPlus Desktop for Windows](https://turbogizzmo.github.io/synology-chatplus-desktop-Windows/)**
+(version `0.10.0`, based on upstream `0.9.1`). All versions are on the
+[Releases page](https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases).
+Every pull request also builds a test installer you can download from its CI run
+(GitHub sign-in required).
 
-> [!IMPORTANT]
-> The in-app updater still points at the upstream project's releases and signing
-> key. That will be switched to this repository before the first release, so an
-> installed build doesn't update itself back to the upstream app.
+Installed apps check this repository for updates and only install ones signed with
+this fork's update key. The fork uses its own app identifier, so it keeps its own
+settings and can sit next to the upstream app.
 
-Windows x64 is the supported target. Unsigned Windows builds may show a SmartScreen
-prompt. See [update details](docs/UPDATER.md).
+Windows x64 is the supported target. Builds aren't Authenticode-signed, so Windows
+SmartScreen may ask once before setup runs. See [update details](docs/UPDATER.md).
 
 ## Getting started
 

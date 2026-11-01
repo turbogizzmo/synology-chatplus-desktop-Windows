@@ -1092,7 +1092,7 @@ mod tests {
             "published_at": if draft { serde_json::Value::Null } else { serde_json::json!("2026-10-14T08:00:00Z") },
             "assets": [{
                 "name": manifest,
-                "browser_download_url": format!("https://github.com/Swiph3l/synology-chatplus-desktop/releases/download/{tag}/{manifest}")
+                "browser_download_url": format!("https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/download/{tag}/{manifest}")
             }]
         })).unwrap()
     }
@@ -1318,7 +1318,7 @@ mod tests {
     fn stable_release_uses_its_stable_manifest() {
         let config = configuration();
         let release = release("v0.5.0", vec![asset("latest.json",
-            "https://github.com/Swiph3l/synology-chatplus-desktop/releases/download/v0.5.0/latest.json")]);
+            "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/download/v0.5.0/latest.json")]);
         assert!(select_release_manifest(release, &config)
             .unwrap()
             .path()
@@ -1535,11 +1535,11 @@ mod tests {
             vec![
                 asset(
                     "latest.json",
-                    "https://github.com/Swiph3l/synology-chatplus-desktop/releases/download/v0.5.0-beta.2/latest.json",
+                    "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/download/v0.5.0-beta.2/latest.json",
                 ),
                 asset(
                     "latest-prerelease.json",
-                    "https://github.com/Swiph3l/synology-chatplus-desktop/releases/download/v0.5.0-beta.2/latest-prerelease.json",
+                    "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/download/v0.5.0-beta.2/latest-prerelease.json",
                 ),
             ],
         );
@@ -1556,7 +1556,7 @@ mod tests {
             "v0.5.0-beta.2",
             vec![asset(
                 "latest.json",
-                "https://github.com/Swiph3l/synology-chatplus-desktop/releases/download/v0.5.0-beta.2/latest.json",
+                "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/download/v0.5.0-beta.2/latest.json",
             )],
         );
         assert!(select_release_manifest(release, &config).is_none());
@@ -1566,7 +1566,7 @@ mod tests {
     fn prerelease_semver_uses_its_manifest_even_without_a_matching_github_flag() {
         let config = configuration();
         let release = release("v0.5.0-beta.6", vec![asset("latest-prerelease.json",
-            "https://github.com/Swiph3l/synology-chatplus-desktop/releases/download/v0.5.0-beta.6/latest-prerelease.json")]);
+            "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases/download/v0.5.0-beta.6/latest-prerelease.json")]);
         assert!(select_release_manifest(release, &config)
             .unwrap()
             .path()
