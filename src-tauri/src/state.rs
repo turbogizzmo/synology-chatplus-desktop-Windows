@@ -9,7 +9,7 @@ pub const AUTOSTART_ENTRY_NAME: &str = "ChatPlus Desktop";
 pub fn autostart_entry_name(identifier: &str) -> String {
     // Swiph3l: Alternate builds must not read or repair production's Run entry.
     // Keep the established production name so existing user preferences survive.
-    if identifier == "io.github.swiph3l.chatplus-desktop" {
+    if identifier == "io.github.turbogizzmo.chatplus-desktop-windows" {
         AUTOSTART_ENTRY_NAME.into()
     } else {
         format!("{AUTOSTART_ENTRY_NAME} ({identifier})")
@@ -567,10 +567,10 @@ mod tests {
 
     #[test]
     fn autostart_preserves_production_and_isolates_alternate_identifiers() {
-        let production = "io.github.swiph3l.chatplus-desktop";
+        let production = "io.github.turbogizzmo.chatplus-desktop-windows";
         assert_eq!(autostart_entry_name(production), AUTOSTART_ENTRY_NAME);
-        let alternate = "io.github.swiph3l.chatplus-desktop.milestoneqa-20261023";
-        let second = "io.github.swiph3l.chatplus-desktop.services-validation";
+        let alternate = "io.github.turbogizzmo.chatplus-desktop-windows.milestoneqa-20261023";
+        let second = "io.github.turbogizzmo.chatplus-desktop-windows.services-validation";
         assert_eq!(
             autostart_entry_name(alternate),
             format!("{AUTOSTART_ENTRY_NAME} ({alternate})")
@@ -580,10 +580,10 @@ mod tests {
             autostart_entry_name(second)
         );
         for lookalike in [
-            "io.github.swiph3l.chatplus-desktop-extra",
-            "io.github.swiph3l.chatplus-desktop.production",
-            "IO.GITHUB.SWIPH3L.CHATPLUS-DESKTOP",
-            "io.github.swiph3l.chatplus-desktop ",
+            "io.github.turbogizzmo.chatplus-desktop-windows-extra",
+            "io.github.turbogizzmo.chatplus-desktop-windows.production",
+            "IO.GITHUB.TURBOGIZZMO.CHATPLUS-DESKTOP-WINDOWS",
+            "io.github.turbogizzmo.chatplus-desktop-windows ",
         ] {
             assert_ne!(autostart_entry_name(lookalike), AUTOSTART_ENTRY_NAME);
             assert!(autostart_entry_name(lookalike).contains(lookalike));

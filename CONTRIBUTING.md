@@ -1,6 +1,6 @@
 # Contributing
 
-ChatPlus Desktop is maintained by Swiph3l. Contributions to bugs, provider integration,
+ChatPlus Desktop for Windows is maintained by turbogizzmo, based on the original by Swiph3l. Contributions to bugs, provider integration,
 translations, accessibility, Windows testing and documentation are welcome.
 
 Start with the [documentation index](docs/README.md), [local development](docs/DEVELOPMENT.md)

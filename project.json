@@ -1,6 +1,6 @@
 {
-  "owner": "Swiph3l",
-  "repository": "synology-chatplus-desktop",
+  "owner": "turbogizzmo",
+  "repository": "synology-chatplus-desktop-Windows",
   "updaterEnabled": true,
-  "updaterPublicKey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRBNkM1MzhFNTlCMTQzMjMKUldRalE3RlpqbE5zU2dJY0JhSXY2clI1dWo1S1FEVWF1d1ZJZld4TlJMV1NETGxad21kV2dZZ28K"
+  "updaterPublicKey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM0RTM3QjUxRjIzNDFFMDQKUldRRUhqVHlVWHZqTkNUL05Vanl1NnAvY0ZNTitYakFldEhDWkRESmRZRDM3dlh6UnRVcmk5UjYK"
 }

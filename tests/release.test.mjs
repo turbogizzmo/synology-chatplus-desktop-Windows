@@ -64,8 +64,8 @@ test("beta metadata never overwrites stable manifest and checksums hash actual E
     await writeFile(
       path.join(dir, "project.json"),
       JSON.stringify({
-        owner: "Swiph3l",
-        repository: "synology-chatplus-desktop",
+        owner: "turbogizzmo",
+        repository: "synology-chatplus-desktop-Windows",
       }),
     );
     await writeFile(path.join(dir, "notes.md"), "Fixture only");

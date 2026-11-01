@@ -12,15 +12,15 @@ pub struct Project {
     pub github_star_url: &'static str,
     pub support_url: Option<&'static str>,
 }
-const REPOSITORY: &str = "https://github.com/Swiph3l/synology-chatplus-desktop";
+const REPOSITORY: &str = "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows";
 pub const PROJECT: Project = Project {
     project_name: "ChatPlus Desktop",
     project_description: "Unofficial community desktop client for Synology ChatPlus.",
-    maintainer: "Swiph3l",
+    maintainer: "turbogizzmo",
     license: "GNU GPLv3",
     github_repository_url: REPOSITORY,
     github_star_url: REPOSITORY,
-    github_issues_url: "https://github.com/Swiph3l/synology-chatplus-desktop/issues",
+    github_issues_url: "https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/issues",
     support_url: None,
 };
 #[derive(Clone, Copy, serde::Deserialize)]

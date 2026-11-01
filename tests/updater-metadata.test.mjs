@@ -13,8 +13,8 @@ test("updater metadata rejects invalid SemVer and missing or fabricated signatur
   try {
     await writeFile(path.join(dir, "app.exe"), "test bytes");
     const config = {
-      owner: "Swiph3l",
-      repository: "synology-chatplus-desktop",
+      owner: "turbogizzmo",
+      repository: "synology-chatplus-desktop-Windows",
     };
     await assert.rejects(
       generate(dir, "0.2.0", "", { "windows-x86_64": "app.exe" }, config),
