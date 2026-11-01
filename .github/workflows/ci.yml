@@ -53,3 +53,28 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run check:release
+  installer:
+    # Unsigned NSIS setup on every PR so changes can be tried on Windows without a
+    # local toolchain. Normal build: no updater artifacts or signing secrets needed.
+    # Named apart from "validate (windows-latest, …)", which the release gate counts.
+    name: installer (windows-latest, unsigned)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (Node 24)
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0 (Node 24)
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        with:
+          toolchain: stable
+      - run: npm ci
+      - run: npm run tauri -- build --bundles nsis
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2 (Node 24)
+        with:
+          name: chatplus-desktop-windows-setup
+          path: src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+          retention-days: 14
