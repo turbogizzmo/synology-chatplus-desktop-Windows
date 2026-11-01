@@ -348,15 +348,23 @@ const RAIL_WIDTH: f64 = 56.;
 // Swiph3l: Native provider WebViews cover the shell, so this must match the 30px CSS footer height.
 const FOOTER_HEIGHT: f64 = 30.;
 
-fn service_size(width: f64, height: f64) -> tauri::LogicalSize<f64> {
-    tauri::LogicalSize::new(
-        (width - RAIL_WIDTH).max(1.),
-        (height - FOOTER_HEIGHT).max(1.),
-    )
+/// The service rail only switches services; with a single enabled service it is
+/// noise beside the provider's own navigation, so that service covers it.
+/// Settings stays on Ctrl+, and the rail returns when a second service is enabled.
+fn rail_width(settings: &state::Settings) -> f64 {
+    if settings.services.iter().filter(|s| s.enabled).count() > 1 {
+        RAIL_WIDTH
+    } else {
+        0.
+    }
 }
 
-fn creation_position(selected: bool, width: f64) -> tauri::LogicalPosition<f64> {
-    tauri::LogicalPosition::new(if selected { RAIL_WIDTH } else { -width - 1. }, 0.)
+fn service_size(width: f64, height: f64, rail: f64) -> tauri::LogicalSize<f64> {
+    tauri::LogicalSize::new((width - rail).max(1.), (height - FOOTER_HEIGHT).max(1.))
+}
+
+fn creation_position(selected: bool, width: f64, rail: f64) -> tauri::LogicalPosition<f64> {
+    tauri::LogicalPosition::new(if selected { rail } else { -width - 1. }, 0.)
 }
 
 pub struct ServiceSession {
@@ -435,7 +443,9 @@ pub fn layout(app: &AppHandle) {
     if let Some(rail) = app.get_webview("main") {
         let _ = rail.set_size(tauri::LogicalSize::new(width, height));
     }
-    for service in state::current(app).services {
+    let settings = state::current(app);
+    let rail = rail_width(&settings);
+    for service in settings.services {
         if let Some(view) = app.get_webview(&label(&service.id)) {
             // Swiph3l: Resize and deferred selection can run between native
             // registration and hide(). Keep that reserved view offscreen until
@@ -449,8 +459,8 @@ pub fn layout(app: &AppHandle) {
             {
                 continue;
             }
-            let _ = view.set_position(tauri::LogicalPosition::new(RAIL_WIDTH, 0.));
-            let _ = view.set_size(service_size(width, height));
+            let _ = view.set_position(tauri::LogicalPosition::new(rail, 0.));
+            let _ = view.set_size(service_size(width, height, rail));
         }
     }
 }
@@ -903,12 +913,13 @@ mod removal_tests {
     #[test]
     fn background_creation_is_staged_outside_the_selected_surface() {
         for width in [1., 300., 900., 1280.] {
-            let background = creation_position(false, width);
+            let background = creation_position(false, width, RAIL_WIDTH);
             assert!(
                 background.x + width < 0.,
                 "initial provider paint must be outside the window"
             );
-            assert_eq!(creation_position(true, width).x, RAIL_WIDTH);
+            assert_eq!(creation_position(true, width, RAIL_WIDTH).x, RAIL_WIDTH);
+            assert_eq!(creation_position(true, width, 0.).x, 0.);
         }
     }
     #[test]
@@ -963,11 +974,28 @@ mod removal_tests {
     #[test]
     fn native_service_geometry_reserves_footer_and_stays_positive_at_any_scale() {
         for scale in [1., 1.25, 1.5, 2.] {
-            let size = service_size(1366. / scale, 768. / scale);
-            assert_eq!(size.width, 1366. / scale - RAIL_WIDTH);
-            assert_eq!(size.height, 768. / scale - FOOTER_HEIGHT);
+            for rail in [RAIL_WIDTH, 0.] {
+                let size = service_size(1366. / scale, 768. / scale, rail);
+                assert_eq!(size.width, 1366. / scale - rail);
+                assert_eq!(size.height, 768. / scale - FOOTER_HEIGHT);
+            }
         }
-        assert_eq!(service_size(10., 10.), tauri::LogicalSize::new(1., 1.));
+        assert_eq!(
+            service_size(10., 10., RAIL_WIDTH),
+            tauri::LogicalSize::new(1., 1.)
+        );
+    }
+    #[test]
+    fn the_rail_appears_only_when_there_is_a_service_to_switch_to() {
+        let mut settings = settings();
+        assert!(settings.services.iter().filter(|s| s.enabled).count() > 1);
+        assert_eq!(rail_width(&settings), RAIL_WIDTH);
+        for service in settings.services.iter_mut().skip(1) {
+            service.enabled = false;
+        }
+        assert_eq!(rail_width(&settings), 0.);
+        settings.services.truncate(1);
+        assert_eq!(rail_width(&settings), 0.);
     }
     #[test]
     fn removal_reselects_active_preserves_other_profile_and_survives_restart() {
@@ -1311,7 +1339,8 @@ fn create_registered(
     let size = window
         .inner_size()
         .map_err(|_| "Could not measure desktop window.")?;
-    let bounds = service_size(size.width as f64 / scale, size.height as f64 / scale);
+    let rail = rail_width(&settings);
+    let bounds = service_size(size.width as f64 / scale, size.height as f64 / scale, rail);
     let selected = !background && settings.active_service.as_deref() == Some(service.id.as_str());
     let view = window
         .add_child(
@@ -1319,7 +1348,7 @@ fn create_registered(
             // Swiph3l: Tauri has no hidden child-builder flag. Stage background
             // controllers fully outside the client area before hiding them, so
             // initial provider paint cannot cover the selected conversation.
-            creation_position(selected, bounds.width),
+            creation_position(selected, bounds.width, rail),
             bounds,
         )
         .map_err(|_| "Could not create service WebView. Check WebView2 installation.")?;
@@ -1337,7 +1366,7 @@ fn create_registered(
         if !selected {
             view.hide()
                 .map_err(|_| "Could not hide background service.")?;
-            view.set_position(tauri::LogicalPosition::new(RAIL_WIDTH, 0.))
+            view.set_position(tauri::LogicalPosition::new(rail, 0.))
                 .map_err(|_| "Could not position background service.")?;
         }
         crate::native_shortcuts::attach(app, &view)
