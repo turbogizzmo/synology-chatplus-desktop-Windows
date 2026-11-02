@@ -114,8 +114,24 @@ pub fn load(app: &AppHandle) {
     let stored = cache_path(app)
         .and_then(|path| std::fs::read(path).ok())
         .and_then(|bytes| serde_json::from_slice::<HashMap<String, Resolved>>(&bytes).ok())
-        .unwrap_or_default();
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|(_, resolved)| sound(resolved))
+        .collect();
     *cache() = stored;
+}
+
+/// The cached address becomes a trusted origin, so an edited or corrupt cache
+/// entry is dropped (and re-resolved) unless it is a plain HTTPS address.
+fn sound(resolved: &Resolved) -> bool {
+    target(&resolved.configured).is_some()
+        && Url::parse(&resolved.effective).is_ok_and(|url| {
+            url.scheme() == "https"
+                && url.host_str().is_some()
+                && url.username().is_empty()
+                && url.password().is_none()
+                && url.fragment().is_none()
+        })
 }
 
 fn store(app: &AppHandle, service_id: &str, resolved: Resolved) {
@@ -233,13 +249,28 @@ fn candidates(info: &Value, target: &Target) -> Vec<Url> {
     hosts
         .into_iter()
         .filter(|entry| seen.insert(entry.clone()))
-        .filter_map(|(host, p)| {
-            let base = Url::parse(&format!("https://{host}:{p}/")).ok()?;
-            // A directory answer must not smuggle paths, credentials or other schemes.
-            (base.host_str().is_some() && base.path() == "/" && base.username().is_empty())
-                .then_some(base)
-        })
+        .filter_map(|(host, p)| base_url(&host, p))
         .collect()
+}
+
+/// A directory answer must not smuggle paths, queries, credentials or other schemes.
+fn base_url(host: &str, port: u16) -> Option<Url> {
+    let base = Url::parse(&format!("https://{host}:{port}/")).ok()?;
+    (base.host_str().is_some()
+        && base.path() == "/"
+        && base.query().is_none()
+        && base.username().is_empty()
+        && base.password().is_none())
+    .then_some(base)
+}
+
+/// The control host must be the QuickConnect domain itself or one of its
+/// subdomains; a bare suffix match would also accept `evilquickconnect.to`.
+fn control_host_allowed(host: &str, domain: &str) -> bool {
+    host == domain
+        || host
+            .strip_suffix(domain)
+            .is_some_and(|prefix| prefix.ends_with('.') && prefix.len() > 1)
 }
 
 fn relay_hosts(info: &Value, target: &Target) -> Vec<(String, u16)> {
@@ -390,7 +421,7 @@ pub async fn resolve(target: &Target, previous: Option<&str>) -> Result<Resoluti
     if verified.is_empty() {
         // No direct path: ask the regional control host for a relay tunnel.
         let control = text(&info, &["env", "control_host"])
-            .filter(|h| h.ends_with(target.domain))
+            .filter(|h| control_host_allowed(h, target.domain))
             .map(str::to_string)
             .unwrap_or(global);
         if let Ok(tunnel) = directory(&control, "request_tunnel", target).await {
@@ -399,7 +430,7 @@ pub async fn resolve(target: &Target, previous: Option<&str>) -> Result<Resoluti
             }
             let relays = relay_hosts(&tunnel, target)
                 .into_iter()
-                .filter_map(|(h, p)| Url::parse(&format!("https://{h}:{p}/")).ok())
+                .filter_map(|(h, p)| base_url(&h, p))
                 .collect();
             verified = probe(relays, &server_id).await;
         }
@@ -642,6 +673,37 @@ mod tests {
     }
 
     #[test]
+    fn control_host_must_be_a_quickconnect_subdomain() {
+        assert!(control_host_allowed(
+            "ukc1.quickconnect.to",
+            "quickconnect.to"
+        ));
+        assert!(control_host_allowed("quickconnect.to", "quickconnect.to"));
+        for hostile in [
+            "evilquickconnect.to",
+            "attacker-quickconnect.to",
+            ".quickconnect.to",
+            "quickconnect.to.evil.example",
+        ] {
+            assert!(
+                !control_host_allowed(hostile, "quickconnect.to"),
+                "{hostile}"
+            );
+        }
+    }
+
+    #[test]
+    fn hostile_relay_entries_cannot_inject_paths_queries_or_credentials() {
+        assert!(base_url("evil.example/x?", 443).is_none());
+        assert!(base_url("user:pw@evil.example", 443).is_none());
+        assert!(base_url("evil.example?q=1", 443).is_none());
+        assert_eq!(
+            base_url("mynas.uk1.quickconnect.to", 443).map(String::from),
+            Some("https://mynas.uk1.quickconnect.to/".into())
+        );
+    }
+
+    #[test]
     fn only_the_named_nas_verifies() {
         let id = "123456789";
         let good = serde_json::json!({"success": true, "ezid": md5_hex(id)});
@@ -720,9 +782,33 @@ mod tests {
 
     #[test]
     fn caches_written_before_server_ids_still_load() {
-        let old = r#"{"s":{"configured":"https://quickconnect.to/mynas/","effective":"https://10-0-2-254.mynas.direct.quickconnect.to:5001/"}}"#;
+        let old = r#"{"s":{"configured":"https://quickconnect.to/mynas/","effective":"https://192-168-1-20.mynas.direct.quickconnect.to:5001/"}}"#;
         let cache: HashMap<String, Resolved> = serde_json::from_str(old).unwrap();
         // An empty ID makes the watcher re-resolve once, which backfills it.
         assert_eq!(cache["s"].server_id, "");
+        assert!(sound(&cache["s"]));
+    }
+
+    #[test]
+    fn tampered_cache_entries_are_not_trusted() {
+        let entry = |configured: &str, effective: &str| Resolved {
+            configured: configured.into(),
+            effective: effective.into(),
+            server_id: String::new(),
+        };
+        let qc = "https://quickconnect.to/mynas/";
+        assert!(sound(&entry(qc, "https://192.168.1.20:5001/")));
+        for effective in [
+            "http://192.168.1.20:5000/",
+            "https://user:pw@evil.example/",
+            "javascript:alert(1)",
+            "not a url",
+        ] {
+            assert!(!sound(&entry(qc, effective)), "{effective}");
+        }
+        assert!(!sound(&entry(
+            "https://nas.example/chat/",
+            "https://192.168.1.20:5001/"
+        )));
     }
 }
