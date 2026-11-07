@@ -114,9 +114,9 @@ test("Brazilian Portuguese and Italian translate every surface while preserving 
     );
     assert.equal(
       localizeError(
-        "Could not create service WebView. Check the system web engine installation.",
+        "Use a server URL without credentials, query parameters or fragments.",
       ),
-      resources[language]["errors.serviceWebview"],
+      resources[language]["errors.cleanUrl"],
     );
     assert.equal(
       localizeError("Remote account detail"),
