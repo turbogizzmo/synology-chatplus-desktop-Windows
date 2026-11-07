@@ -105,6 +105,19 @@ threads, loading history, composer focus, message editing and reaction/menu open
 
 - [ ] Official login works with ordinary WebView2. For WhatsApp, check QR and exposed
       phone-number pairing without recording secrets or bypassing security checks.
+- [ ] For Messenger, continue beyond the login form through the account's actual
+      Facebook authorization and any offered verification, then confirm return to
+      messages. An anonymous login-page check does not cover this stage.
+- [ ] If Facebook offers Google verification, test the real button, an initially
+      blank related popup with a later redirect, and a same-window redirect. Google
+      Accounts must load without an external article prompt; a successful provider
+      callback returns to the originating Facebook session. Record Google policy
+      rejection separately from blocked navigation; retain the ordinary WebView2
+      identity. Do not copy credentials or cookies to a system browser.
+- [ ] Test encrypted-history restoration with a consenting account's PIN. Confirm
+      the provider finishes restoring history or displays a usable provider error;
+      a spinner remaining indefinitely is a failure. Do not record the PIN, keys,
+      network payloads or message contents. Passing login does not pass this check.
 - [ ] Reload, restart, linked-session retention and logout work for the tested instance.
 - [ ] A second instance stays isolated through login/logout and notification routing.
 - [ ] Experimental status remains visible; unsupported read operations are not offered.
@@ -115,6 +128,14 @@ threads, loading history, composer focus, message editing and reaction/menu open
       HTTP has its additional warning. Cancel/Escape opens nothing; Open launches once.
 - [ ] Same-provider popups, delayed popup navigation, previews and regular/blob
       attachments preserve the originating provider and native routing policy.
+- [ ] In an isolated local provider fixture, submit a form with `method="post"`,
+      `target="_blank"` and `rel="opener"` from a related popup. The child receives
+      the original method/body, calls back to that popup and can close without
+      replacing it. Repeat with `window.open("about:blank")` followed by delayed
+      same-provider navigation. Keep synthetic values in the fixture.
+- [ ] An eighth open popup is allowed; a ninth is refused without replacing an
+      existing window. Closing one allows another. Disabling, removing or changing
+      the originating service closes its popups without closing another service's.
 - [ ] Unsafe schemes, credentials, foreign blobs and stale/disabled-origin requests
       do not reach the external opener.
 - [ ] Native Save As precedes each download. Chosen destination/status remain visible;
@@ -128,7 +149,7 @@ threads, loading history, composer focus, message editing and reaction/menu open
 
 - [ ] Settings, rail, footer, menus and keyboard navigation work at minimum and larger
       windows and actual 100%/125%/150% Windows scaling. Long names remain usable.
-- [ ] Check all seven locales: en, pl, es, de, fr, ja and zh-TW, including dialogs,
+- [ ] Check all nine locales: en, pl, es, de, fr, ja, zh-TW, pt-BR and it, including dialogs,
       read-action labels, notification settings and download status.
 - [ ] Include beta updates off/on produces the expected release eligibility.
       Automatic checks remain quiet when offline; manual checks remain available.

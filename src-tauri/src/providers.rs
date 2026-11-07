@@ -120,13 +120,15 @@ impl ProviderId {
     /// package's `/webman/3rdparty/<pkg>/config` manifest (both are `standalone`
     /// with `allowURLNoSynoToken`). An explicit alias path is kept unchanged.
     pub fn dsm_launch(self, mut url: Url) -> Url {
-        let app = match self {
+        let application = match self {
             Self::SynologyChatplus => "SYNO.SDS.ChatPlus.Application",
             Self::SynologyChat => "SYNO.SDS.Chat.Application",
             _ => return url,
         };
-        if url.path() == "/" && url.query().is_none() {
-            url.set_query(Some(&format!("launchApp={app}")));
+        // Swiph3l: Adapted from turbogizzmo's Windows fork. Keep explicit paths,
+        // queries and the configured origin intact; only the initial URL changes.
+        if url.path() == "/" && url.query().is_none() && url.fragment().is_none() {
+            url.query_pairs_mut().append_pair("launchApp", application);
         }
         url
     }
@@ -348,6 +350,51 @@ mod tests {
             launch(ProviderId::Mattermost, "https://mm.example/"),
             "https://mm.example/"
         );
+    }
+    #[test]
+    fn bare_nas_addresses_launch_the_selected_synology_package() {
+        for (provider, application) in [
+            (
+                ProviderId::SynologyChatplus,
+                "SYNO.SDS.ChatPlus.Application",
+            ),
+            (ProviderId::SynologyChat, "SYNO.SDS.Chat.Application"),
+        ] {
+            for input in ["https://nas.example:5001", "http://192.0.2.1:5000/"] {
+                let configured = provider.validate_url(input).unwrap();
+                let base = Url::parse(&configured).unwrap();
+                let launch = provider.dsm_launch(base.clone());
+                assert_eq!(launch.origin(), base.origin());
+                assert_eq!(
+                    launch.query(),
+                    Some(format!("launchApp={application}").as_str())
+                );
+                assert!(provider.allows(&configured, &launch));
+                assert_eq!(provider.validate_url(&configured).unwrap(), configured);
+            }
+        }
+    }
+    #[test]
+    fn dsm_launch_preserves_aliases_redirect_parameters_and_other_providers() {
+        for input in [
+            "https://chat.example/chat/",
+            "https://chat.example/custom/chat/",
+            "https://nas.example/?launchApp=existing",
+            "https://nas.example/#existing",
+        ] {
+            let url = Url::parse(input).unwrap();
+            assert_eq!(ProviderId::SynologyChatplus.dsm_launch(url.clone()), url);
+        }
+        for provider in [
+            ProviderId::Discord,
+            ProviderId::Mattermost,
+            ProviderId::Slack,
+            ProviderId::Whatsapp,
+            ProviderId::Messenger,
+        ] {
+            let url = Url::parse("https://example.com/").unwrap();
+            assert_eq!(provider.dsm_launch(url.clone()), url);
+        }
     }
     fn profile_service(id: &str) -> ServiceConfig {
         ServiceConfig {

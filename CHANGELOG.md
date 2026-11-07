@@ -2,6 +2,33 @@
 
 All notable changes will be documented here. Versions follow Semantic Versioning.
 
+## Unreleased
+
+Backports fixes from upstream ChatPlus Desktop 1.0.0 to 1.0.2.
+
+### Added
+
+- Brazilian Portuguese and Italian, bringing the interface to nine languages.
+
+### Fixed
+
+- Sign-in popups (for example Messenger and Facebook) keep their form data, opener
+  and callbacks instead of being reloaded as a plain page. At most eight popups can be
+  open at once, and a popup that closes itself no longer leaves an empty window behind.
+  Popups are closed when their service is removed, disabled or changed.
+- Messenger can complete Google account verification and return to Facebook without
+  ending on a blank window.
+- A confirmed browser link is checked again before it opens, so internal Facebook
+  sign-in pages and session-bound attachments are never sent to the system browser.
+- A bare NAS address with a `#fragment` no longer gets a `launchApp` parameter added,
+  and the parameter is now URL-encoded.
+
+### Changed
+
+- Dependency updates: Tauri CLI 2.12.4, Vite 8.3.5, linkedom 0.18.14, Tokio,
+  tauri-plugin-clipboard-manager and tauri-plugin-store 2.5.0, and the CodeQL action.
+  The yanked async-executor 1.14.0 is replaced with 1.14.1.
+
 ## 0.10.0
 
 First release of ChatPlus Desktop for Windows from turbogizzmo's fork. It is based on

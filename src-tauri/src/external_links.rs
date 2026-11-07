@@ -131,7 +131,9 @@ fn permitted(settings: &state::Settings, service: &ServiceConfig, target: &url::
                 && current.provider == service.provider
                 && current.url == service.url
         })
-        && navigation::external_target(target).is_some()
+        // Swiph3l: Recheck routing at the final opener boundary. Provider login
+        // and authenticated attachments must retain their originating profile.
+        && navigation::external_anchor_target(service, target).is_some()
 }
 
 fn open_confirmed(
@@ -310,6 +312,13 @@ pub fn initialization_script(_: &ServiceConfig) -> String {
     String::new()
 }
 
+/// Auth documents may request the same explicit external-link confirmation as
+/// the provider. This grants no provider notifications, read-state or commands.
+fn external_link_document(service: &ServiceConfig, source: &url::Url) -> bool {
+    navigation::provider_document(service, source)
+        || navigation::authentication_document(service, source)
+}
+
 #[cfg(any(windows, test))]
 fn anchor_message_target(
     service: &ServiceConfig,
@@ -323,10 +332,7 @@ fn anchor_message_target(
         chatplus_external_link: u8,
         href: String,
     }
-    if json.len() > 64 * 1024
-        || source != current
-        || !navigation::provider_document(service, source)
-    {
+    if json.len() > 64 * 1024 || source != current || !external_link_document(service, source) {
         return None;
     }
     let intent: Intent = serde_json::from_str(json).ok()?;
@@ -435,9 +441,9 @@ fn source_matches(
 ) -> bool {
     current == expected
         && if main {
-            navigation::provider_document(service, current)
+            external_link_document(service, current)
         } else {
-            crate::downloads::popup_allowed(service, current)
+            crate::popups::allowed(service, current)
         }
 }
 
@@ -903,6 +909,53 @@ mod tests {
     }
 
     #[test]
+    fn messenger_auth_document_help_links_require_the_exact_live_auth_source() {
+        let (_, mut service, _) = fixture();
+        service.provider = crate::providers::ProviderId::Messenger;
+        service.url = "https://www.facebook.com/messages/".into();
+        let source: url::Url = "https://accounts.google.com/v3/signin/identifier"
+            .parse()
+            .unwrap();
+        let help: url::Url = "https://support.google.com/accounts/answer/synthetic"
+            .parse()
+            .unwrap();
+        let json = serde_json::json!({"chatplusExternalLink":1,"href":help.as_str()}).to_string();
+        assert_eq!(
+            anchor_message_target(&service, &source, &source, &json),
+            Some(help)
+        );
+        assert!(source_matches(&service, true, &source, &source));
+        assert!(!navigation::provider_document(&service, &source));
+        assert!(!service.provider.allows(&service.url, &source));
+
+        let changed = "https://accounts.google.com/v3/signin/challenge/pwd"
+            .parse()
+            .unwrap();
+        assert!(anchor_message_target(&service, &source, &changed, &json).is_none());
+        assert!(!source_matches(&service, true, &source, &changed));
+        for value in [
+            "http://accounts.google.com/",
+            "https://accounts.google.com:8443/",
+            "https://accounts.google.com.evil.example/",
+            "https://user:secret@accounts.google.com/",
+            "https://support.google.com/",
+        ] {
+            let rejected = value.parse().unwrap();
+            assert!(
+                anchor_message_target(&service, &rejected, &rejected, &json).is_none(),
+                "{value}"
+            );
+            assert!(
+                !source_matches(&service, true, &rejected, &rejected),
+                "{value}"
+            );
+        }
+        service.provider = crate::providers::ProviderId::Whatsapp;
+        assert!(anchor_message_target(&service, &source, &source, &json).is_none());
+        assert!(!source_matches(&service, true, &source, &source));
+    }
+
+    #[test]
     fn anchor_bridge_cannot_open_provider_routes_attachments_or_non_web_targets() {
         let (_, mut service, _) = fixture();
         let source: url::Url = service.url.parse().unwrap();
@@ -987,6 +1040,58 @@ mod tests {
             "ms-settings:notifications",
         ] {
             assert!(!permitted(&settings, &service, &input.parse().unwrap()));
+        }
+    }
+
+    #[test]
+    fn confirmed_provider_auth_routes_never_leave_their_session_through_the_opener() {
+        let (mut settings, mut service, external) = fixture();
+        service.provider = crate::providers::ProviderId::Messenger;
+        service.url = "https://www.facebook.com/messages/".into();
+        settings.services = vec![service.clone()];
+        for input in [
+            "https://www.facebook.com/messages/",
+            "https://www.facebook.com/login.php?next=https%3A%2F%2Fwww.facebook.com%2Fmessages%2F",
+            "https://www.facebook.com/dialog/oauth?client_id=example&state=opaque",
+            "https://www.facebook.com/connect/login_success.html#access_token=example",
+            "https://www.facebook.com/checkpoint/?next=%2Fmessages%2F",
+            "https://accounts.google.com/o/oauth2/v2/auth?state=synthetic",
+            "https://accounts.google.com/v3/signin/challenge/pwd",
+        ] {
+            let target = input.parse().unwrap();
+            assert!(!permitted(&settings, &service, &target), "{input}");
+            open_confirmed(true, &settings, &service, &target, |_| {
+                panic!("provider authentication must stay in its WebView profile")
+            })
+            .unwrap();
+        }
+        let mut opened = Vec::new();
+        open_confirmed(true, &settings, &service, &external, |target| {
+            opened.push(target.to_owned());
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(opened, vec![external.as_str()]);
+    }
+
+    #[test]
+    fn confirmed_authenticated_attachment_popups_never_use_the_system_opener() {
+        let (mut settings, mut service, _) = fixture();
+        service.provider = crate::providers::ProviderId::Discord;
+        service.url = "https://discord.com/app/".into();
+        settings.services = vec![service.clone()];
+        for input in [
+            "https://cdn.discordapp.com/attachments/1/2/report.pdf?ex=example",
+            "https://media.discordapp.net/attachments/1/2/photo.png",
+            "blob:https://discord.com/attachment-id",
+        ] {
+            let target = input.parse().unwrap();
+            assert!(crate::downloads::attachment_popup(&service, &target));
+            assert!(!permitted(&settings, &service, &target), "{input}");
+            open_confirmed(true, &settings, &service, &target, |_| {
+                panic!("authenticated attachments must keep their originating profile")
+            })
+            .unwrap();
         }
     }
 
