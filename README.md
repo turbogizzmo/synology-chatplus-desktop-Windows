@@ -59,13 +59,13 @@ with no Synology, Meta, Slack or Discord affiliation.
 - PDF and attachment downloads through the provider's session, with a Save As dialog.
 - External links show their destination before opening your default browser.
 - Light, Dark and System themes; English, Polish, Spanish, German, French,
-  Japanese and Traditional Chinese interface.
+  Japanese, Traditional Chinese, Brazilian Portuguese and Italian interface.
 - Native menus, zoom/fullscreen, saved window geometry and optional start with Windows.
 
 ## Status and downloads
 
 **[Download ChatPlus Desktop for Windows](https://turbogizzmo.github.io/synology-chatplus-desktop-Windows/)**
-(version `0.10.0`, based on upstream `0.9.1`). All versions are on the
+(version `0.11.0`, based on upstream `0.9.1` with fixes from upstream `1.0.2`). All versions are on the
 [Releases page](https://github.com/turbogizzmo/synology-chatplus-desktop-Windows/releases).
 Every pull request also builds a test installer you can download from its CI run
 (GitHub sign-in required).

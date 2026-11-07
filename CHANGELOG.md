@@ -2,7 +2,7 @@
 
 All notable changes will be documented here. Versions follow Semantic Versioning.
 
-## Unreleased
+## 0.11.0
 
 Backports fixes from upstream ChatPlus Desktop 1.0.0 to 1.0.2.
 
